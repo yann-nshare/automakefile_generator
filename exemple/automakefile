@@ -1,0 +1,188 @@
+#!/bin/bash
+##
+## EPITECH PROJECT, 2019
+## SYN_automakefile_2019
+## File description:
+## automakefile
+##
+
+if [ ! -z $2 ]
+then
+	exit 84
+fi
+if [ ! -f $1 ]
+then
+	exit 84
+else
+
+   IFS=";";
+
+   while read line
+      do array=($line)
+         if [[ $line =~ "BCK_DIR" ]]; then BCK_DIR=${array[1]};
+         elif [[ ${array[0]} =~ "source_filename" ]]; then TMP=${array[1]};
+         SOURCES=$SOURCES" "${array[1]};
+         elif [[ ${array[0]} =~ ".c" ]]; then TMP=${array[0]};
+         SOURCES=$SOURCES" "${array[0]};#$(echo $TMP | cut -d ";" -f1);
+         elif [[ ${array[0]} =~ "HEADERS_DIR" ]]; then HEADERS=${array[1]};
+         elif [[ ${array[0]} =~ "LIBS" ]]; then LIBS=${array[1]};
+         elif [[ ${array[0]} =~ "EXEC" ]]; then EXEC=${array[1]};
+         elif [[ ${array[0]} =~ "PROJECT_DIR" ]]; then PROJECT_DIR=${array[1]};
+         elif [[ ${array[0]} =~ "SOURCES_DIR" ]]; then SOURCES_DIR=${array[1]};
+         elif [[ ${array[0]} =~ "CFLAGS" ]]; then CFLAGS=${array[1]};
+         elif [[ ${array[0]} =~ "LDFLAGS" ]]; then LDFLAGS=${array[1]};
+         elif [[ ${array[0]} =~ "UNZIPFLAGS" ]]; then UNZIPFLAGS=${array[1]};
+         elif [[ ${array[0]} =~ "ZIPFLAGS" ]]; then ZIPFLAGS=${array[1]};
+         elif [[ ${array[0]} =~ "UNZIP;" ]]; then UNZIP=${array[1]};
+         elif [[ ${array[0]} =~ "ZIP;" ]]; then ZIP=${array[1]};
+         elif [[ ${array[0]} =~ "CC" ]]; then CC=${array[1]};
+         fi
+      # echo "${array[1]}";
+   done < $1
+
+echo "##
+## EPITECH PROJECT, 2019
+## MAKEFILE
+## File description:
+## Makefile
+##
+
+NAME	= $EXEC
+
+CC	= $CC
+
+HEADERS_DIR = $HEADERS
+
+CFLAGS = $CFLAGS \$(addprefix -I$PROJECT_DIR/, \$(HEADERS_DIR))
+
+RM	= rm -f
+
+SRCS := \$(addprefix $PROJECT_DIR/$SOURCES_DIR/,$SOURCES)
+
+OBJS	= \$(SRCS:.c=.o)
+
+LIB := #-L $LIBS
+
+UNZIP = $UNZIP
+
+ZIPFLAGS = $ZIPFLAGS
+
+ZIP = $ZIP
+
+all: \$(NAME)
+
+\$(NAME):	\$(OBJS)
+		\$(CC) \$(OBJS) -o \$(NAME) \$(CFLAGS) \$(LIB)
+
+clean:
+	\$(RM) \$(OBJS)
+
+fclean: clean
+	\$(RM) \$(NAME)
+
+re: fclean all
+
+archive:		\$(UNZIP) \$(ZIPFLAGS) \$(ZIP) * && echo Fichier \$(ZIP) généré.;
+
+.PHONY: all clean fclean re" > Makefile
+
+echo "#!/bin/sh
+read n < version
+if [ \$1 == "+" ]; then
+	next_n=\$[\$n+1]
+elif [ \$1 == "-" ]; then
+	next_n=\$[\$n-1]
+fi
+echo \$next_n > version" > num.sh
+
+echo "##
+## EPITECH PROJECT, 2019
+## MAKEFILE
+## File description:
+## Makefile
+##
+
+define arch =
+#!/bin/bash
+@$ZIP $ZIPFLAGS $BCK_DIR/backup.$ZIP $SOURCES
+@./num.sh "+"
+@echo -e archive file generated.;
+endef
+
+define rev =
+#!/bin/bash
+@$UNZIP $UNZIPFLAGS $BCK_DIR/backup.$ZIP
+@./num.sh "-"
+endef
+
+define version =
+#!/bin/bash
+@cat version
+endef
+
+define del =
+#!/bin/bash
+@rm -rf $BCK_DIR/backup.$ZIP
+@echo -e file zip delete;
+endef
+
+NAME	= $EXEC
+
+CC	= $CC
+
+HEADERS_DIR = $HEADERS
+
+CFLAGS = $CFLAGS \$(addprefix -I, \$(HEADERS_DIR))
+
+RM	= rm -f
+
+SRCS := \$(addprefix $SOURCES_DIR/,$SOURCES)
+
+OBJS	= \$(SRCS:.c=.o)
+
+LIB := #-L $LIBS
+
+UNZIP = $UNZIP
+
+ZIPFLAGS = $ZIPFLAGS
+
+UNZIPFLAGS = $UNZIPFLAGS
+
+ZIP = $ZIP
+
+all: \$(NAME)
+
+\$(NAME):	\$(OBJS)
+	\$(CC) \$(OBJS) -o \$(NAME) \$(CFLAGS) \$(LIB)
+
+clean:
+	\$(RM) \$(OBJS)
+
+fclean: clean
+	\$(RM) \$(NAME)
+
+re: fclean all
+
+archive: ; \$(value arch)
+
+revert: ; \$(value rev)
+
+num: ; \$(value version)
+
+delete: ; \$(value del)
+
+.PHONY: all clean fclean re" > $PROJECT_DIR/Makefile
+
+echo "0" > $PROJECT_DIR/version
+
+echo "#!/bin/sh
+read n < version
+if [ \$1 == "+" ]; then
+	next_n=\$[\$n+1]
+elif [ \$1 == "-" ]; then
+	next_n=\$[\$n-1]
+fi
+echo \$next_n > version" > $PROJECT_DIR/num.sh
+chmod +x $PROJECT_DIR/num.sh
+fi
+exit 0
