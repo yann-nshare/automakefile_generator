@@ -1,0 +1,48 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: ansible-lint
+    - uses: ansible/ansible-lint-action@v4.1.0.post0
+    - uses: actions/checkout@v2
+    - name: configure
+      run: ./configure
+    - name: make
+      run: make
+    - name: make check
+      run: make check
+    - name: make distcheck
+      run: make distcheck
+    - name: Code Inspector GitHub action
+    uses: codeinspectorio/github-action@v1
+    with:
+      # Token to checkout the repository.
+      repo_token: 
+      # Access key on Code Inspector
+      code_inspector_access_key: 
+      # Secret key on Code Inspector
+      code_inspector_secret_key: 
+      # Minimum grade. Valid options are EXCELLENT, GOOD, NEUTRAL, WARNING, CRITICAL. Leave blank to ignore.
+      min_quality_grade: # default is 
+      # Minimum quality score from 0 (worst) to 100 (best)
+      min_quality_score: # default is 0
+      # Maximum defect rate per line of code (e.g. 0.01 for 1 defect per 100 lines of code). Leave 0 to ignore.
+      max_defects_rate: # default is 0
+      # Maximum number of complex functions rate (e.g. number of complex functions / number of functions). Leave 0 to ignore.
+      max_complex_functions_rate: # default is 0
+      # Maximum number of long functions rate (e.g. number of long functions / number of functions). Leave 0 to ignore.
+      max_long_functions_rate: # default is 0
+      # Project on code inspector. Will use the preferences of this analysis. Leave blank and no preferences are used
+      project_name: # default is 
+      # Timeout before giving up (in case analysis takes too long). Default is 10 minutes
+      max_timeout_sec: # default is 600
